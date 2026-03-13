@@ -1,0 +1,34 @@
+[project]
+name = "isochron"
+version = "0.1.0"
+description = "ISO 8601 date, time, duration, and interval parser/formatter for Python"
+readme = "README.md"
+license = "BSD-3-Clause"
+authors = [
+    { name = "Agentine" }
+]
+requires-python = ">=3.10"
+dependencies = []
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/agentine/isochron"
+Repository = "https://github.com/agentine/isochron"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/isochron"]
