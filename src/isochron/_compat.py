@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from isochron._duration import Duration
 from isochron._errors import ISO8601Error, ParseError
-from isochron._format import format_date, format_datetime, format_duration, format_time
+from isochron._format import format_date, format_datetime, format_duration, format_time, format_timezone
 from isochron._parse_date import parse_date
 from isochron._parse_datetime import parse_datetime
 from isochron._parse_duration import parse_duration
@@ -28,7 +28,7 @@ duration_isoformat = format_duration
 datetime_isoformat = format_datetime
 date_isoformat = format_date
 time_isoformat = format_time
-tz_isoformat = format_time  # isodate uses tz_isoformat for tz portion
+tz_isoformat = format_timezone  # isodate uses tz_isoformat for tz portion only
 
 __all__ = [
     "Duration",

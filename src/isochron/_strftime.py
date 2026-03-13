@@ -50,8 +50,15 @@ def strftime(dt: datetime.date | datetime.datetime, fmt: str) -> str:
             return str(iso_day)
         return m.group(0)
 
-    # Replace custom directives first
-    processed = _CUSTOM_RE.sub(_replace, fmt)
+    # Protect escaped %% from custom directive matching
+    _placeholder = "\x00PERCENT\x00"
+    protected = fmt.replace("%%", _placeholder)
+
+    # Replace custom directives
+    processed = _CUSTOM_RE.sub(_replace, protected)
+
+    # Restore escaped %%
+    processed = processed.replace(_placeholder, "%%")
 
     try:
         return dt.strftime(processed)

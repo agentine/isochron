@@ -133,7 +133,9 @@ class Duration:
             )
         return NotImplemented
 
-    def __rsub__(self, other: datetime.timedelta) -> Duration:
+    def __rsub__(
+        self, other: datetime.timedelta | datetime.date | datetime.datetime
+    ) -> Duration | datetime.date | datetime.datetime:
         if isinstance(other, datetime.timedelta):
             return Duration(
                 years=-self.years,
@@ -142,6 +144,10 @@ class Duration:
                 seconds=other.seconds - self.seconds,
                 microseconds=other.microseconds - self.microseconds,
             )
+        if isinstance(other, datetime.datetime):
+            return _add_to_datetime(other, -self)
+        if isinstance(other, datetime.date):
+            return _add_to_date(other, -self)
         return NotImplemented
 
     def __neg__(self) -> Duration:
@@ -213,29 +219,56 @@ def _add_to_datetime(dt: datetime.datetime, dur: Duration) -> datetime.datetime:
 
 def _format_duration(d: Duration) -> str:
     """Format a Duration as an ISO 8601 duration string."""
+    from isochron._errors import FormatError
+
     if not d:
         return "P0D"
 
-    parts: list[str] = ["P"]
-    if d.years:
-        parts.append(f"{abs(d.years)}Y")
-    if d.months:
-        parts.append(f"{abs(d.months)}M")
-    if d.days:
-        parts.append(f"{abs(d.days)}D")
+    # Normalize months into years
+    total_months = d.years * 12 + d.months
+    norm_years, norm_months = divmod(abs(total_months), 12)
 
-    time_parts: list[str] = []
-    total_sec = d.seconds
-    hours, remainder = divmod(abs(total_sec), 3600)
+    # Normalize time
+    total_us = d.seconds * 1_000_000 + d.microseconds
+    abs_total_us = abs(total_us)
+    total_s, norm_us = divmod(abs_total_us, 1_000_000)
+    hours, remainder = divmod(total_s, 3600)
     minutes, secs = divmod(remainder, 60)
 
+    norm_days = abs(d.days)
+
+    # Check for mixed signs (unrepresentable in ISO 8601)
+    signs: set[bool] = set()
+    if total_months != 0:
+        signs.add(total_months > 0)
+    if d.days != 0:
+        signs.add(d.days > 0)
+    if total_us != 0:
+        signs.add(total_us > 0)
+
+    if len(signs) > 1:
+        raise FormatError(
+            f"Cannot format duration with mixed-sign components: {d!r}"
+        )
+
+    is_negative = False in signs  # False means a negative value was present
+
+    parts: list[str] = ["P"]
+    if norm_years:
+        parts.append(f"{norm_years}Y")
+    if norm_months:
+        parts.append(f"{norm_months}M")
+    if norm_days:
+        parts.append(f"{norm_days}D")
+
+    time_parts: list[str] = []
     if hours:
         time_parts.append(f"{hours}H")
     if minutes:
         time_parts.append(f"{minutes}M")
-    if secs or d.microseconds:
-        if d.microseconds:
-            frac = f"{secs}.{abs(d.microseconds):06d}".rstrip("0")
+    if secs or norm_us:
+        if norm_us:
+            frac = f"{secs}.{norm_us:06d}".rstrip("0")
             time_parts.append(f"{frac}S")
         else:
             time_parts.append(f"{secs}S")
@@ -248,10 +281,6 @@ def _format_duration(d: Duration) -> str:
     if result == "P":
         return "P0D"
 
-    # Prepend minus if any component is negative
-    is_negative = any(
-        getattr(d, f) < 0 for f in ("years", "months", "days", "seconds", "microseconds")
-    )
     if is_negative:
         return "-" + result
     return result

@@ -104,3 +104,24 @@ def _format_negative_td(td: datetime.timedelta) -> str:
     """Format a negative timedelta."""
     pos = -td
     return "-" + _format_timedelta(pos)
+
+
+def format_timezone(t: datetime.time | datetime.datetime) -> str:
+    """Format only the timezone portion of a time or datetime.
+
+    Returns ``Z`` for UTC, ``+HH:MM`` / ``-HH:MM`` for other offsets,
+    or an empty string for naive values.  This matches isodate's
+    ``tz_isoformat`` behaviour.
+    """
+    if t.tzinfo is None:
+        return ""
+    offset = t.utcoffset()
+    if offset is None:
+        return ""
+    if offset == datetime.timedelta(0):
+        return "Z"
+    total = int(offset.total_seconds())
+    sign = "+" if total >= 0 else "-"
+    total = abs(total)
+    h, m = divmod(total // 60, 60)
+    return f"{sign}{h:02d}:{m:02d}"
