@@ -1,0 +1,5 @@
+{
+  "include": ["src/isochron"],
+  "typeCheckingMode": "strict",
+  "pythonVersion": "3.10"
+}

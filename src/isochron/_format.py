@@ -55,7 +55,7 @@ def format_duration(d: Duration | datetime.timedelta) -> str:
         if d.days < 0:
             return _format_negative_td(d)
         return _format_timedelta(d)
-    if isinstance(d, Duration):
+    if isinstance(d, Duration):  # pyright: ignore[reportUnnecessaryIsInstance]
         return str(d)
     raise FormatError(f"Cannot format {type(d).__name__} as duration")
 

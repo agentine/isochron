@@ -105,7 +105,7 @@ class Duration:
             )
         if isinstance(other, datetime.datetime):
             return _add_to_datetime(other, self)
-        if isinstance(other, datetime.date):
+        if isinstance(other, datetime.date):  # pyright: ignore[reportUnnecessaryIsInstance]
             return _add_to_date(other, self)
         return NotImplemented
 
@@ -123,7 +123,7 @@ class Duration:
                 seconds=self.seconds - other.seconds,
                 microseconds=self.microseconds - other.microseconds,
             )
-        if isinstance(other, datetime.timedelta):
+        if isinstance(other, datetime.timedelta):  # pyright: ignore[reportUnnecessaryIsInstance]
             return Duration(
                 years=self.years,
                 months=self.months,
@@ -146,7 +146,7 @@ class Duration:
             )
         if isinstance(other, datetime.datetime):
             return _add_to_datetime(other, -self)
-        if isinstance(other, datetime.date):
+        if isinstance(other, datetime.date):  # pyright: ignore[reportUnnecessaryIsInstance]
             return _add_to_date(other, -self)
         return NotImplemented
 
@@ -160,7 +160,7 @@ class Duration:
         )
 
     def __mul__(self, other: int) -> Duration:
-        if isinstance(other, int):
+        if isinstance(other, int):  # pyright: ignore[reportUnnecessaryIsInstance]
             return Duration(
                 years=self.years * other,
                 months=self.months * other,

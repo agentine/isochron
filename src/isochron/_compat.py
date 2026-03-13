@@ -21,6 +21,7 @@ from isochron._parse_datetime import parse_datetime
 from isochron._parse_duration import parse_duration
 from isochron._parse_time import parse_time
 from isochron._parse_tz import parse_timezone
+from isochron._strftime import strftime
 from isochron._tz import UTC, FixedOffset
 
 # isodate name aliases
@@ -48,6 +49,7 @@ __all__ = [
     "parse_duration",
     "parse_time",
     "parse_timezone",
+    "strftime",
     "time_isoformat",
     "tz_isoformat",
 ]
