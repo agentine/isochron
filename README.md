@@ -19,6 +19,7 @@ pip install isochron
 ## Quick Start
 
 ```python
+import datetime
 from isochron import (
     parse_date, parse_time, parse_datetime, parse_duration,
     format_datetime, Duration, UTC
@@ -41,8 +42,7 @@ dur = parse_duration("P1Y2M3DT4H5M6S")  # -> Duration(years=1, months=2, ...)
 dur.total_seconds(reference=datetime.date(2026, 1, 1))  # requires ref (isodate #95 fix)
 
 # Format with UTC -> Z suffix (isodate #89 fix)
-from datetime import datetime, timezone
-format_datetime(datetime(2026, 3, 13, 14, 30, tzinfo=timezone.utc))
+format_datetime(datetime.datetime(2026, 3, 13, 14, 30, tzinfo=UTC))
 # -> "2026-03-13T14:30:00Z"
 
 # Duration arithmetic
@@ -107,7 +107,24 @@ The `isochron.compat` module maps all isodate public names to their isochron equ
 - **`Interval`** -- Frozen dataclass with `start`, `end`, `duration`.
 - **`RecurringInterval`** -- Iterable frozen dataclass with `recurrences` and `interval`.
 - **`UTC`** -- Alias for `datetime.timezone.utc`.
-- **`FixedOffset`** -- Fixed UTC-offset `tzinfo` subclass.
+- **`FixedOffset(offset_minutes)`** -- Fixed UTC-offset `tzinfo` subclass.
+
+### Exceptions
+
+- **`ISO8601Error`** -- Base exception for all isochron errors.
+- **`ParseError`** -- Raised when input cannot be parsed. Has optional `string` and `position` attributes.
+- **`FormatError`** -- Raised when a value cannot be formatted to ISO 8601.
+
+### `strftime` Format Codes
+
+`strftime(dt, fmt)` supports all standard Python `%` directives plus these ISO 8601 extras:
+
+| Code | Description | Example |
+|------|-------------|---------|
+| `%G` | ISO week-based year | `2026` |
+| `%V` | ISO week number (01–53) | `11` |
+| `%u` | ISO weekday (1=Monday, 7=Sunday) | `5` |
+| `%:z` | UTC offset as `+HH:MM` (vs `%z` → `+HHMM`) | `+05:30` |
 
 ## isodate Bugs Fixed
 
