@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import calendar
 import datetime
 import re
 
@@ -57,6 +58,12 @@ def parse_date(s: str) -> datetime.date:
         if m.group("neg"):
             year = -year
         ordinal = int(m.group("ordinal"))
+        max_ordinal = 366 if calendar.isleap(year) else 365
+        if ordinal < 1 or ordinal > max_ordinal:
+            raise ParseError(
+                f"Ordinal day {ordinal} out of range for year {year} (1-{max_ordinal})",
+                string=s,
+            )
         try:
             return datetime.date(year, 1, 1) + datetime.timedelta(days=ordinal - 1)
         except ValueError as e:

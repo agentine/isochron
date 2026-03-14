@@ -7,8 +7,9 @@ from __future__ import annotations
 
 import datetime
 
-import isodate  # type: ignore[import-untyped]
 import pytest
+
+isodate = pytest.importorskip("isodate", reason="isodate required for cross-verification tests")
 
 from isochron import (
     Duration,

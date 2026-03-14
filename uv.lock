@@ -39,6 +39,7 @@ source = { editable = "." }
 
 [package.optional-dependencies]
 dev = [
+    { name = "isodate" },
     { name = "mypy" },
     { name = "pytest" },
 ]
@@ -53,6 +54,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "isodate", marker = "extra == 'dev'", specifier = ">=0.7.2" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
 ]
